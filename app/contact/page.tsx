@@ -1,3 +1,27 @@
 'use client'
 import { useState } from 'react'
-export default function ContactPage() { const [sent, setSent] = useState(false); return <main className="mx-auto max-w-[1200px] px-5 pb-24 pt-40 md:px-10"><p className="text-[10px] uppercase tracking-[.3em] text-muted-foreground">Start a conversation</p><h1 className="mt-6 max-w-4xl font-serif text-7xl leading-[.9] tracking-[-.07em] md:text-[9rem]">Let&apos;s make<br />something lasting.</h1><div className="mt-20 grid gap-16 md:grid-cols-2"><div><p className="max-w-sm text-lg leading-7 text-muted-foreground">For productions, collaborations, and general enquiries, send us a note. We&apos;d love to hear what you&apos;re working on.</p><a href="mailto:hello@wuchfilms.com" className="mt-8 inline-block border-b border-foreground pb-2 text-sm">hello@wuchfilms.com</a></div>{sent ? <div className="border-t border-border pt-5"><p className="font-serif text-4xl">Thank you.</p><p className="mt-3 text-sm text-muted-foreground">Your message is on its way.</p></div> : <form onSubmit={(e) => { e.preventDefault(); setSent(true) }} className="flex flex-col gap-6"><input required placeholder="Your name" className="border-b border-border bg-transparent py-4 text-lg outline-none placeholder:text-muted-foreground focus:border-foreground" /><input required type="email" placeholder="Email address" className="border-b border-border bg-transparent py-4 text-lg outline-none placeholder:text-muted-foreground focus:border-foreground" /><textarea required placeholder="Tell us a little about the project" rows={4} className="resize-none border-b border-border bg-transparent py-4 text-lg outline-none placeholder:text-muted-foreground focus:border-foreground" /><button className="self-start border-b border-foreground pb-2 text-[10px] uppercase tracking-[.2em]">Send enquiry ↗</button></form>}</div></main> }
+
+export default function ContactPage() {
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState('')
+  const [pending, setPending] = useState(false)
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setPending(true)
+    setError('')
+    const form = event.currentTarget
+    const data = new FormData(form)
+    const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(data)) })
+    setPending(false)
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}))
+      setError(result.error ?? 'Unable to send your enquiry right now.')
+      return
+    }
+    form.reset()
+    setSent(true)
+  }
+
+  return <main className="mx-auto max-w-[1200px] px-5 pb-24 pt-40 md:px-10"><p className="text-[10px] uppercase tracking-[.3em] text-muted-foreground">Start a conversation</p><h1 className="mt-6 max-w-4xl font-serif text-7xl leading-[.9] tracking-[-.07em] md:text-[9rem]">Let&apos;s make<br />something lasting.</h1><div className="mt-20 grid gap-16 md:grid-cols-2"><div><p className="max-w-sm text-lg leading-7 text-muted-foreground">For productions, collaborations, and general enquiries, send us a note. We&apos;d love to hear what you&apos;re working on.</p><a href="mailto:hello@wuchfilms.com" className="mt-8 inline-block border-b border-foreground pb-2 text-sm">hello@wuchfilms.com</a></div>{sent ? <div className="border-t border-border pt-5"><p className="font-serif text-4xl">Thank you.</p><p className="mt-3 text-sm text-muted-foreground">Your message is on its way.</p></div> : <form onSubmit={submit} className="flex flex-col gap-6"><input name="name" required placeholder="Your name" className="border-b border-border bg-transparent py-4 text-lg outline-none placeholder:text-muted-foreground focus:border-foreground" /><input name="email" required type="email" placeholder="Email address" className="border-b border-border bg-transparent py-4 text-lg outline-none placeholder:text-muted-foreground focus:border-foreground" /><textarea name="message" required placeholder="Tell us a little about the project" rows={4} className="resize-none border-b border-border bg-transparent py-4 text-lg outline-none placeholder:text-muted-foreground focus:border-foreground" />{error && <p role="alert" className="text-sm text-red-400">{error}</p>}<button disabled={pending} className="self-start border-b border-foreground pb-2 text-[10px] uppercase tracking-[.2em] disabled:opacity-50">{pending ? 'Sending…' : 'Send enquiry ↗'}</button></form>}</div></main>
+}

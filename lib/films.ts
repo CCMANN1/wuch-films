@@ -9,9 +9,24 @@ export type Film = {
   description: string
   image: string
   status?: string
+  imdb?: string
 }
 
-export const films: Film[] = []
+export const films: Film[] = [
+  {
+    slug: 'batt-koch',
+    title: 'Batt Koch',
+    year: '2025',
+    format: 'Feature film',
+    runtime: '',
+    director: 'Siddarth Koul & Ankit Wali',
+    logline: 'A story carried by language, landscape and lived memory.',
+    description: 'Batt Koch is a feature film by Siddarth Koul and Ankit Wali.',
+    image: '/batt-koch-poster.jpg',
+    status: 'Founders’ work',
+    imdb: 'https://imdb.com/title/tt39277185/?ref_=ext_shr_lnk',
+  },
+]
 
 export const getFilm = (slug: string) => films.find((film) => film.slug === slug)
 
@@ -23,7 +38,7 @@ export const founders = [
     name: 'Ankit Wali',
     role: 'Writer / Director / Creative',
     bio: 'Ankit Wali is a writer, director and creative professional whose work spans theatre, dialect coaching and screen projects. He has worked in assistant directing and dialect coaching, and co-directed and co-wrote Batt Koch with Siddarth Koul.',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=85',
+    image: '/ankit-wali.jpg',
     imdb: 'https://www.imdb.com/find/?q=Ankit%20Wali',
   },
   {
