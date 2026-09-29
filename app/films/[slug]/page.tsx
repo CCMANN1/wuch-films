@@ -1,0 +1,7 @@
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+import { films, getFilm } from '@/lib/films'
+import { FilmImage } from '@/components/site-shell'
+export function generateStaticParams() { return films.map(({ slug }) => ({ slug })) }
+export default async function FilmPage({ params }: { params: Promise<{ slug: string }> }) { const film = getFilm((await params).slug); if (!film) notFound(); return <main className="pt-32"><div className="mx-auto max-w-[1440px] px-5 md:px-10"><Link href="/films" className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[.2em] text-muted-foreground"><ArrowLeft size={14} /> All films</Link><div className="mt-12 grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-end"><div><p className="text-[10px] uppercase tracking-[.3em] text-muted-foreground">{film.format} / {film.year}</p><h1 className="mt-5 font-serif text-7xl leading-[.88] tracking-[-.07em] md:text-[9rem]">{film.title}</h1><p className="mt-10 max-w-md text-lg leading-7 text-muted-foreground">{film.logline}</p></div><FilmImage src={film.image} alt={`Still from ${film.title}`} className="aspect-[4/3]" /></div><div className="grid gap-8 border-t border-border py-16 md:grid-cols-2"><div><p className="text-[10px] uppercase tracking-[.25em] text-muted-foreground">Credits</p><p className="mt-5 text-sm">Directed by {film.director}<br />{film.runtime}</p></div><p className="max-w-md text-xl leading-8">{film.description}</p></div></div></main> }
